@@ -17,6 +17,11 @@ public class ImageUtil {
     private BufferedImage image;
 
     private Robot robot;
+    private Rectangle woRange;
+
+    public void setWoRange(Rectangle woRange){
+        this.woRange = woRange;
+    }
 
     private int bgx = 14;
     private int bgy1 = 56;
@@ -94,7 +99,10 @@ public class ImageUtil {
         BufferedImage grayImage = hdImage(screenshot);
         for (int yi = 0; yi < grayImage.getHeight(); yi++) {
             for (int xi = 0; xi < grayImage.getWidth(); xi++) {
-
+                //存在于自身范围
+                if(woRange.contains(x + xi, y + yi)){
+                    continue;
+                }
                 int trgb = grayImage.getRGB(xi, yi);
                 boolean bgr = false;
                 for (int i = bgy1; i < bgy2; i+=30) {
@@ -103,6 +111,7 @@ public class ImageUtil {
                 }
                 //System.out.println("比较完毕-->"+bgr);
                 boolean notSelf = rgbPy(trgb, image.getRGB(0, 0), 10);
+
                 if (!notSelf && !bgr) {
                     System.out.println(trgb + "-->");
                     rgbMap.clear();
@@ -133,7 +142,10 @@ public class ImageUtil {
         BufferedImage grayImage = hdImage(screenshot);
         for (int yi = grayImage.getHeight() - 1; yi >= 0; yi--) {
             for (int xi = 0; xi < grayImage.getWidth(); xi++) {
-
+                //存在于自身范围
+                if(woRange.contains(x + xi, y + yi)){
+                    continue;
+                }
                 int trgb = grayImage.getRGB(xi, yi);
                 boolean b = rgbPy(trgb, rgb, 2);
                 if (b) {
@@ -215,6 +227,7 @@ public class ImageUtil {
             //int bgrgb = image.getRgb(bgx, bgy);
             robot.delay(1500);
             Point woPoint = image.findImg(20, 57, 500, 900);
+            image.setWoRange(new Rectangle(woPoint.x-3,woPoint.y-47,40,70));
             //背景色
 
             Point notBgPoint1 = image.findFirstNotBgColorUpLeftToDownRight(20, 300, 470, 400);
