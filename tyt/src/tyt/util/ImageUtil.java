@@ -227,7 +227,7 @@ public class ImageUtil {
         // /re
          while (true) {
             //int bgrgb = image.getRgb(bgx, bgy);
-            robot.delay(1500);
+            robot.delay(2000);
             Point woPoint = image.findImg(20, 57, 500, 900);
             image.setWoRange(new Rectangle(woPoint.x-3,woPoint.y-82,40,70));
             //背景色
