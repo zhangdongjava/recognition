@@ -105,7 +105,7 @@ public class ImageUtil {
                 }
                 int trgb = grayImage.getRGB(xi, yi);
                 boolean bgr = false;
-                for (int i = bgy1; i < bgy2; i+=30) {
+                for (int i = bgy1; i < bgy2; i+=60) {
                      int rgb = getRgb(bgx,i);
                     bgr = bgr || rgbPy(trgb, rgb, 10);
                 }
@@ -223,7 +223,9 @@ public class ImageUtil {
     public static void run(ImageUtil image,Robot robot) throws IOException {
         int bgx = 30;
         int bgy = 450;
-        while (true) {
+       //
+        // /re
+         while (true) {
             //int bgrgb = image.getRgb(bgx, bgy);
             robot.delay(1500);
             Point woPoint = image.findImg(20, 57, 500, 900);
@@ -239,11 +241,11 @@ public class ImageUtil {
             robot.mouseMove(woPoint.x + 15, woPoint.y + 10);
             Point mb = center(notBgPoint2, notBgPoint1);
             double jl = getJlcenter(woPoint, mb);
-            robot.mouseMove(notBgPoint1.x, notBgPoint1.y);
-            robot.delay(500);
-            robot.mouseMove(notBgPoint2.x, notBgPoint2.y);
-            robot.delay(500);
-            System.out.println(jl);
+//            robot.mouseMove(notBgPoint1.x, notBgPoint1.y);
+//            robot.delay(500);
+//            robot.mouseMove(notBgPoint2.x, notBgPoint2.y);
+//            robot.delay(500);
+            System.out.println("距离:"+jl);
             robot.mouseMove(bgx, bgy);
             robot.mousePress(KeyEvent.BUTTON1_MASK);
             int d;
@@ -252,7 +254,7 @@ public class ImageUtil {
             }else if(jl>780){
                 d = (int) (jl / 350 * 1000);
             }else{
-                d = (int) (jl / 330 * 1000);
+                d = (int) (jl / 333 * 1000);
             }
             System.out.println(d);
             robot.delay(d);
