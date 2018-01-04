@@ -227,7 +227,7 @@ public class ImageUtil {
             //int bgrgb = image.getRgb(bgx, bgy);
             robot.delay(1500);
             Point woPoint = image.findImg(20, 57, 500, 900);
-            image.setWoRange(new Rectangle(woPoint.x-3,woPoint.y-47,40,70));
+            image.setWoRange(new Rectangle(woPoint.x-3,woPoint.y-82,40,70));
             //背景色
 
             Point notBgPoint1 = image.findFirstNotBgColorUpLeftToDownRight(20, 300, 470, 400);
@@ -246,7 +246,14 @@ public class ImageUtil {
             System.out.println(jl);
             robot.mouseMove(bgx, bgy);
             robot.mousePress(KeyEvent.BUTTON1_MASK);
-            int d = (int) (jl / 330 * 1000);
+            int d;
+            if(jl<100){
+                d = (int) (jl / 300 * 1000);
+            }else if(jl>780){
+                d = (int) (jl / 350 * 1000);
+            }else{
+                d = (int) (jl / 330 * 1000);
+            }
             System.out.println(d);
             robot.delay(d);
             robot.mouseRelease(KeyEvent.BUTTON1_MASK);
