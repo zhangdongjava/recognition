@@ -2,7 +2,6 @@ package tyt.util;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,16 +11,11 @@ import java.util.Map;
 /**
  * Created by zhang on 2018/1/3.
  */
-public class ImageUtil {
+public class ImageUtil2 {
 
     private BufferedImage image;
 
     private Robot robot;
-    private Rectangle woRange;
-
-    public void setWoRange(Rectangle woRange){
-        this.woRange = woRange;
-    }
 
     private int bgx = 14;
     private int bgy1 = 56;
@@ -29,8 +23,8 @@ public class ImageUtil {
 
     private Map<Point,Integer> rgbMap = new HashMap<Point, Integer>();
 
-    public ImageUtil(String calssPath) throws IOException, AWTException {
-        image = ImageIO.read(ImageUtil.class.getResourceAsStream(calssPath));
+    public ImageUtil2(String calssPath) throws IOException, AWTException {
+        image = ImageIO.read(ImageUtil2.class.getResourceAsStream(calssPath));
         robot = new Robot();
     }
 
@@ -99,19 +93,15 @@ public class ImageUtil {
         BufferedImage grayImage = hdImage(screenshot);
         for (int yi = 0; yi < grayImage.getHeight(); yi++) {
             for (int xi = 0; xi < grayImage.getWidth(); xi++) {
-                //存在于自身范围
-                if(woRange.contains(x + xi, y + yi)){
-                    continue;
-                }
+
                 int trgb = grayImage.getRGB(xi, yi);
                 boolean bgr = false;
-                for (int i = bgy1; i < bgy2; i+=60) {
+                for (int i = bgy1; i < bgy2; i+=30) {
                      int rgb = getRgb(bgx,i);
                     bgr = bgr || rgbPy(trgb, rgb, 10);
                 }
                 //System.out.println("比较完毕-->"+bgr);
                 boolean notSelf = rgbPy(trgb, image.getRGB(0, 0), 10);
-
                 if (!notSelf && !bgr) {
                     System.out.println(trgb + "-->");
                     rgbMap.clear();
@@ -142,10 +132,7 @@ public class ImageUtil {
         BufferedImage grayImage = hdImage(screenshot);
         for (int yi = grayImage.getHeight() - 1; yi >= 0; yi--) {
             for (int xi = 0; xi < grayImage.getWidth(); xi++) {
-                //存在于自身范围
-                if(woRange.contains(x + xi, y + yi)){
-                    continue;
-                }
+
                 int trgb = grayImage.getRGB(xi, yi);
                 boolean b = rgbPy(trgb, rgb, 2);
                 if (b) {
@@ -161,6 +148,11 @@ public class ImageUtil {
 
     public void saveImage(BufferedImage screenshot) throws IOException {
         ImageIO.write(screenshot, "png", new File("d:/a.png"));
+    }
+    public void saveImage(int x,int y,int w,int h,String path) throws IOException {
+        BufferedImage screenshot = robot.createScreenCapture(
+                new Rectangle(x, y, w, h));
+        ImageIO.write(screenshot, "png", new File(path));
     }
 
     public boolean equals(BufferedImage image, int py) {
@@ -201,69 +193,15 @@ public class ImageUtil {
 
     public static void main(String[] args) throws IOException, AWTException {
 
-        ImageUtil image = new ImageUtil("/tyt/wo.png");
+        ImageUtil2 image = new ImageUtil2("/tyt/wo.png");
 
-        Robot robot = new Robot();
-        while (true){
-            try {
-                run(image,robot);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            robot.mouseMove(275, 788);
-            robot.mousePress(KeyEvent.BUTTON1_MASK);
-            robot.delay(200);
-            robot.mouseRelease(KeyEvent.BUTTON1_MASK);
-            robot.delay(500);
-        }
+        Point woPoint = image.findImg(20, 57, 500, 900);
+        image.saveImage(woPoint.x-3,woPoint.y-47,40,70,"D:\\360安全浏览器下载/wo.png");
 
     }
 
 
-    public static void run(ImageUtil image,Robot robot) throws IOException {
-        int bgx = 30;
-        int bgy = 450;
 
-        while (true) {
-            //int bgrgb = image.getRgb(bgx, bgy);
-            robot.delay(2000);
-            Point woPoint = image.findImg(20, 57, 500, 900);
-            image.setWoRange(new Rectangle(woPoint.x-3,woPoint.y-82,40,70));
-            //背景色
-
-            Point notBgPoint1 = image.findFirstNotBgColorUpLeftToDownRight(20, 300, 470, 400);
-            int turgb = image.getRgb(notBgPoint1.x, notBgPoint1.y + 20);
-            Point notBgPoint2 = null;
-
-            notBgPoint2 = image.findFirstColorDownLeftToUpRight(Math.max(notBgPoint1.x - 30, 20), notBgPoint1.y, 40, 100, turgb);
-
-            robot.mouseMove(woPoint.x + 15, woPoint.y + 10);
-            Point mb = center(notBgPoint2, notBgPoint1);
-            double jl = getJlcenter(woPoint, mb);
-            robot.mouseMove(notBgPoint1.x, notBgPoint1.y);
-            robot.delay(500);
-            robot.mouseMove(notBgPoint2.x, notBgPoint2.y);
-            robot.delay(500);
-
-            System.out.println("距离:"+jl);
-            robot.mouseMove(bgx, bgy);
-            robot.mousePress(KeyEvent.BUTTON1_MASK);
-            int d;
-            if(jl<100){
-                d = (int) (jl / 300 * 1000);
-            }else if(jl>780){
-                d = (int) (jl / 350 * 1000);
-            }else{
-                d = (int) (jl / 333 * 1000);
-            }
-            System.out.println(d);
-            robot.delay(d);
-            robot.mouseRelease(KeyEvent.BUTTON1_MASK);
-            //移动鼠标好取背景色
-            robot.delay(100);
-            robot.mouseMove(woPoint.x, woPoint.y);
-        }
-    }
 
 
     public static Point center(Point p, Point p2) {
